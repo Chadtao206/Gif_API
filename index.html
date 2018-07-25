@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>GIFS R US</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css" integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B"
+        crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/js/bootstrap.min.js" integrity="sha384-o+RDsa0aLu++PJvFqy8fFScvbHFLtbvScb8AjopnFD+iEQ7wo/CG0xlczd+2O/em"
+        crossorigin="anonymous"></script>
+    <style type="text/stylesheet">
+    </style>
+</head>
+
+<body>
+    <div style="width:90%;margin:auto;" class="container">
+        <hr>
+        <h1 style="text-align:center; margin:10px;font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;">Welcome to GIFS R US, the gift that keeps on Gif-ing</h1>
+        <hr>
+        <div class="buttons row"></div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-lg-2"></div>
+        <div class="display col-lg-7">
+
+        </div>
+        <div class="search col-lg-2">
+            <form id="gif-form">
+                <label for="gif-input">Add a new search term</label>
+                <input type="text" id="gif-input">
+                <br>
+                <br>
+                <input id="add" class="btn btn-primary" type="submit" value="Add Category">
+                <br>
+                <br>
+                <div class="form-group">
+                    <label for="pwd">Number of Gifs to display</label>
+                    <select class="form-control" id="num-records-select">
+                        <option value="5">5</option>
+                        <option value="10" selected>10</option>
+                        <option value="20">20</option>
+                        <option value="50">50</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+        <div class="col-lg-1"></div>
+    </div>
+
+
+
+    <script type="text/javascript">
+        var gifs = ["cats", "dogs", "funny", "cute"];
+        var limit = 10;
+        //add gif to array
+        $("#add").on("click", function () {
+            event.preventDefault();
+            var gif = $("#gif-input").val().trim();
+            if (gif) {
+                if (!(gifs.includes(gif))) {
+                    gifs.push(gif);
+                    renderButtons();
+                    console.log(gifs)
+                }
+            }
+        });
+
+
+        //render button function
+        function renderButtons() {
+            $(".buttons").empty();
+            for (var i = 0; i < gifs.length; i++) {
+                $(".buttons").append("<div style='margin:5px' class='btn btn-warning' category='" + gifs[i] + "'>" + gifs[i] + "</div>");
+            }
+            $(".btn").on("click", callGif);
+        }
+
+        renderButtons();
+
+
+        //API call on Gif
+        function callGif() {
+            var keyword = $(this).attr("category");
+            limit = $("#num-records-select").val();
+            var apiURL = "https://api.giphy.com/v1/gifs/search?api_key=kL0Dny0pFvVB5WnJxbxFPThXtesJ1hbh&q=" + keyword + "&limit=" + limit + "&offset=0&rating=PG-13&lang=en"
+
+            $.ajax({
+                url: apiURL,
+                method: "GET",
+            }).then(function (response) {
+                console.log(response);
+                var gifArray = response.data;
+                console.log(gifArray);
+                for (i = 0; i < gifArray.length; i++) {
+                    $(".display").prepend("<div class='card' style='width: 12rem;float:left;border-style:double;border-width:4px;border-color:gold;'><img animate='" + gifArray[i].images.fixed_width.url + "' still='" + gifArray[i].images.fixed_width_still.url + "' style='width: 100%; height: 12vw; object-fit: cover;' class='card-img-top img-fluid' src='" + gifArray[i].images.fixed_width_still.url + "' state='still' alt='Card image cap'><div class='card-body'><h5 class='card-title'>Rating - " + gifArray[i].rating + "</h5><p class='card-text' style='height: 4vw; object-fit: cover;'>" + gifArray[i].title + "</p></div></div>")
+                }
+                $(".card-img-top").on("click", function () {
+                    if ($(this).attr("state") === "still") {
+                        $(this).attr("state", "animate");
+                        $(this).attr("src", $(this).attr("animate"));
+                    } else {
+                        $(this).attr("state", "still");
+                        $(this).attr("src", $(this).attr("still"));
+                    }
+                })
+            })
+        }
+    </script>
+
+</body>
+
+</html>
