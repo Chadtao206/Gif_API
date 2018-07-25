@@ -78,7 +78,7 @@
             for (var i = 0; i < gifs.length; i++) {
                 $(".buttons").append("<div style='margin:5px' class='btn btn-warning' category='" + gifs[i] + "'>" + gifs[i] + "</div>");
             }
-            $(".btn").on("click", callGif);
+            $(".btn-warning").on("click", callGif);
         }
 
         renderButtons();
